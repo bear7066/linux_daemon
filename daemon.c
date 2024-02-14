@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <sys/inotify.h>
 
+// a failed program result usually return non-zero value 
 #define EXT_SUCCESS 0
 #define EXT_ERR_TOO_FEW_ARCS 1
 #define EXT_ERR_INIT_INOTIFY 2
@@ -27,13 +28,16 @@ int main(int argc, char* argv[]) {
 
     basePath = (char *)malloc(sizeof(char) * strlen(argv[1]) + 1);
     strcpy(basePath, argv[1]);
+    // print the original path：printf("%s", basePath);
     token = strtok(basePath, "/");
     
     while (token != NULL) {
         basePath = token;
         token = strtok(NULL, "/");
     }
-
+    
+    // blocking operation => let program run until it stuck by itself
+    // blocking operation => program hand on code and wait for some event to continue
     IeventQueue = inotify_init();
     if (IeventQueue == -1) {
         fprintf(stderr, "Error initializing inotify instance!\n");
