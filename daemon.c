@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <signal.h>
+#include <sys/inotify.h>
 #define EXT_SUCCESS 0
 #define EXT_ERR_TOO_FEW_ARCS 1
 
@@ -31,10 +32,11 @@ int main(int argc, char* argv[]){
 
     }
     // printf("%s\n", basePath);
-   /*
+    // blocking operation => let program run until it stuck by itself
+    // blocking operation => program hand on code and wait for some event to continue
     while(true){
 
-    }*/
+    }
 
     // a failed program result usually return non-zero value 
     exit(EXT_SUCCESS);
