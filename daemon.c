@@ -23,12 +23,14 @@ int main(int argc, char* argv[]) {
 
     char *basePath = NULL;
     char *token = NULL;
-	char *notificationMessage = NULL;
+    char *notificationMessage = NULL;
+    
     char buffer[4096];
 	// return the number of characters
-	int readLength = 0;
+    int readLength = 0;
 
-	const uint32_t watchMask = IN_CREATE | IN_DELETE | IN_ACCESS | IN_CLOSE_WRITE | IN_MODIFY | IN_MOVE_SELF;
+    const struct inotify_event* watchEvent;
+    const uint32_t watchMask = IN_CREATE | IN_DELETE | IN_ACCESS | IN_CLOSE_WRITE | IN_MODIFY | IN_MOVE_SELF;
 
     if (argc < 2) {
         fprintf(stderr, "Usage: we need more arcs\n");
@@ -70,7 +72,7 @@ int main(int argc, char* argv[]) {
 		exit(EXT_ERR_READ_INOTIFY);
 	}
 	for(char *bufferPointer = buffer; bufferPointer < buffer + readLength;
-			bufferPointer += sizeof(inotify_event) + watchEvent->len){
+			bufferPointer += sizeof(struct inotify_event) + watchEvent->len){
 		watchEvent = (const struct inotify_event *) bufferPointer;
 		if(watchEvent->mask & IN_CREATE){
 			notificationMessage = "File is created.";
