@@ -34,13 +34,14 @@ int main(int argc, char* argv[]) {
 
     basePath = (char *)malloc(sizeof(char) * strlen(argv[1]) + 1);
     strcpy(basePath, argv[1]);
+    
     // Print the original path: printf("%s", basePath);
     token = strtok(basePath, "/");
-    
     while (token != NULL) {
         basePath = token;
         token = strtok(NULL, "/");
     }
+
     if (basePath == NULL) {
         fprintf(stderr, "Error getting base path!\n");
         exit(EXT_ERR_BASE_PATH_NULL);
@@ -63,10 +64,12 @@ int main(int argc, char* argv[]) {
     while (true) {
         printf("Waiting for event...\n");
         readLength = read(IeventQueue, buffer, sizeof(buffer));
+
         if (readLength == -1) {
             fprintf(stderr, "Error reading from inotify instance!\n");
             exit(EXT_ERR_READ_INOTIFY);
         }
+
         for (char *bufferPointer = buffer; bufferPointer < buffer + readLength; 
         bufferPointer += sizeof(struct inotify_event) + watchEvent->len) {
             
