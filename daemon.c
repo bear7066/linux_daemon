@@ -67,15 +67,36 @@ int main(int argc, char* argv[]) {
             fprintf(stderr, "Error reading from inotify instance!\n");
             exit(EXT_ERR_READ_INOTIFY);
         }
-        for (char *bufferPointer = buffer; bufferPointer < buffer + readLength;
-                bufferPointer += sizeof(struct inotify_event) + watchEvent->len) {
+        for (char *bufferPointer = buffer; bufferPointer < buffer + readLength; 
+        bufferPointer += sizeof(struct inotify_event) + watchEvent->len) {
+            
+            notificationMessage = NULL;
             watchEvent = (const struct inotify_event *) bufferPointer;
             if (watchEvent->mask & IN_CREATE) {
-                notificationMessage = "File is created.";
+                notificationMessage = "File is created.\n";
             }
             if (watchEvent->mask & IN_DELETE) {
-                notificationMessage = "File is deleted.";
+                notificationMessage = "File is deleted.\n";
             }
+            if (watchEvent->mask & IN_ACCESS) {
+                notificationMessage = "File is accessed.\n";
+            }
+            if (watchEvent->mask & IN_CLOSE_WRITE) {
+				notificationMessage = "File written and closed.\n";
+			}
+ 
+			if (watchEvent->mask & IN_MODIFY) {
+				notificationMessage = "File modified.\n";
+			}
+ 
+			if (watchEvent->mask & IN_MOVE_SELF) {
+				notificationMessage = "File moved.\n";
+			}
+
+            if(notificationMessage == NULL){
+                continue;
+            }
+            printf("%s\n", notificationMessage);
         }
     }
     // exit(EXT_SUCCESS);
