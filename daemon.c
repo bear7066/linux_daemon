@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
         basePath = token;
         token = strtok(NULL, "/");
     }
-	if(basePath == NULL){
-		fprintf(stderr, "Error getting base path!");
-		exit(EXT_ERR_BASE_PATH_NULL);
-	}
+    if(basePath == NULL){
+	fprintf(stderr, "Error getting base path!");
+	exit(EXT_ERR_BASE_PATH_NULL);
+    }
     // blocking operation => let program run until it stuck by itself
     // blocking operation => program hand on code and wait for some event to continue
     IeventQueue = inotify_init();
@@ -62,24 +62,23 @@ int main(int argc, char* argv[]) {
         exit(EXT_ERR_ADD_WATCH);
     }
 	
-	while(true){
-		printf("Waiting for ievent...\n");
-		readLength = read(IeventQueue, buffer, sizeof(buffer));
-		if(readLength = -1){
-			fprintf(stderr, "Error reading from inotify instance!\n");
-			exit(EXT_ERR_READ_INOTIFY);
+    while(true){
+	printf("Waiting for ievent...\n");
+	readLength = read(IeventQueue, buffer, sizeof(buffer));
+	if(readLength = -1){
+		fprintf(stderr, "Error reading from inotify instance!\n");
+		exit(EXT_ERR_READ_INOTIFY);
+	}
+	for(char *bufferPointer = buffer; bufferPointer < buffer + readLength;
+			bufferPointer += sizeof(inotify_event) + watchEvent->len){
+		watchEvent = (const struct inotify_event *) bufferPointer;
+		if(watchEvent->mask & IN_CREATE){
+			notificationMessage = "File is created.";
 		}
-		
-		for(char *bufferPointer = buffer; bufferPointer < buffer + readLength;
-				bufferPointer += sizeof(inotify_event) + watchEvent->len){
-			watchEvent = (const struct inotify_event *) bufferPointer;
-			if(watchEvent->mask & IN_CREATE){
-				notificationMessage = "File is created.";
-			}
-			if(watchEvent->mask & IN_DELETE){
-				notificationMessage = "File is deleted.";
-			}
+		if(watchEvent->mask & IN_DELETE){
+			notificationMessage = "File is deleted.";
 		}
+	}
 	}
     // exit(EXT_SUCCESS);
 }
